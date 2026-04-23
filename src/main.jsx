@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Navigate, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import './App.css';
 
@@ -61,6 +62,11 @@ const router = createBrowserRouter([
     element: <PageNotFound />,
   },
 ]);
+
+<React.StrictMode>
+  <Toaster position="top-right" />
+  <RouterProvider router={router} />
+</React.StrictMode>
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -13,13 +13,38 @@ export const mahasiswaList = [
     status: true,
   },
   {
-    nim: "20211002",
+    nim: "A11.2023.15325",
     nama: "Siti Aminah",
     status: true,
   },
   {
-    nim: "20211003",
+    nim: "A11.2023.15326",
     nama: "Ahmad Fauzi",
+    status: true,
+  },
+  {
+    nim: "A11.2023.15327",
+    nama: "Maimunah",
+    status: true,
+  },
+  {
+    nim: "A11.2023.15328",
+    nama: "Akmaludin",
+    status: false,
+  },
+  {
+    nim: "A11.2023.15329",
+    nama: "Afia Salsabila",
+    status: true,
+  },
+  {
+    nim: "A11.2023.15330",
+    nama: "Zulkifli",
+    status: false,
+  },
+  {
+    nim: "A11.2023.15331",
+    nama: "Annisa Putri",
     status: false,
   },
 ];
