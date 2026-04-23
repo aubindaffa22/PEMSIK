@@ -1,65 +1,154 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Card from "@/Pages/Admin/Components/Card";
 import Heading from "@/Pages/Admin/Components/Heading";
 import Button from "@/Pages/Admin/Components/Button";
 
 import { mahasiswaList } from "@/Data/Dummy";
+import MahasiswaTable from "./MahasiswaTable";
+import MahasiswaModal from "./MahasiswaModal";
 
 const Mahasiswa = () => {
-  const handleEdit = (nama) => alert(`Edit data ${nama}`);
-  const handleDelete = (nama) => {
-    if (confirm(`Yakin ingin hapus ${nama}?`)) alert("Data berhasil dihapus!");
+  const navigate = useNavigate();
+  
+  // State untuk data mahasiswa (NIM, Nama, status)
+  const [mahasiswa, setMahasiswa] = useState([]);
+  
+  // State untuk modal (true/false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  
+  // State untuk form (NIM, Nama, status)
+  const [form, setForm] = useState({ nim: "", nama: "", status: true });
+
+  // Load data mahasiswa saat komponen dimount
+  useEffect(() => {
+    setTimeout(() => {
+      setMahasiswa(mahasiswaList);
+    }, 500);
+  }, []);
+
+  // Fungsi CRUD: Create (Tambah Mahasiswa)
+  const addMahasiswa = (newData) => {
+    setMahasiswa([...mahasiswa, newData]);
+  };
+
+  // Fungsi CRUD: Update (Edit Mahasiswa)
+  const updateMahasiswa = (nim, newData) => {
+    const updated = mahasiswa.map((mhs) => 
+      mhs.nim === nim ? {...mhs, ...newData} : mhs
+    );
+    setMahasiswa(updated);
+  };
+
+  // Fungsi CRUD: Delete (Hapus Mahasiswa)
+  const deleteMahasiswa = (nim) => {
+    const filtered = mahasiswa.filter((mhs) => mhs.nim !== nim);
+    setMahasiswa(filtered);
+  };
+
+  // Event Handling: handleChange - menangkap perubahan data ke state
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ 
+      ...form, 
+      [name]: name === "status" ? value === "true" : value 
+    });
+  };
+
+  // Event Handling: handleSubmit - memperbarui data ke state
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Form Validation: Data kurang terisi
+    if (!form.nim || !form.nama) {
+      alert("NIM dan Nama wajib diisi!");
+      return;
+    }
+
+    if (isEdit) {
+      // Validasi konfirmasi ketika update
+      if (confirm(`Apakah Anda yakin ingin mengubah data mahasiswa dengan NIM ${form.nim}?`)) {
+        updateMahasiswa(form.nim, form);
+        alert("Data berhasil diperbarui!");
+      }
+    } else {
+      // Form Validation: NIM unique
+      const exists = mahasiswa.find((m) => m.nim === form.nim);
+      if (exists) {
+        alert("NIM sudah terdaftar! Silakan gunakan NIM lain.");
+        return;
+      }
+      addMahasiswa(form);
+      alert("Data berhasil ditambahkan!");
+    }
+
+    // Reset form
+    setForm({ nim: "", nama: "", status: true });
+    setIsEdit(false);
+    setIsModalOpen(false);
+  };
+
+  // Buka modal untuk tambah mahasiswa
+  const openAddModal = () => {
+    setIsModalOpen(true);
+    setForm({ nim: "", nama: "", status: true });
+    setIsEdit(false);
+  };
+
+  // Buka modal untuk edit mahasiswa
+  const handleEdit = (mhs) => {
+    setForm({ nim: mhs.nim, nama: mhs.nama, status: mhs.status });
+    setIsEdit(true);
+    setIsModalOpen(true);
+  };
+
+  // Handle hapus mahasiswa dengan validasi konfirmasi
+  const handleDelete = (nim) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus data mahasiswa dengan NIM ${nim}?`)) {
+      deleteMahasiswa(nim);
+      alert("Data berhasil dihapus!");
+    }
+  };
+
+  // Handle detail mahasiswa
+  const handleDetail = (nim) => {
+    navigate(`/admin/mahasiswa/${nim}`);
+  };
+
+  // Tutup modal
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setForm({ nim: "", nama: "", status: true });
+    setIsEdit(false);
   };
 
   return (
-    <Card>
-      <div className="flex justify-between items-center mb-4">
-        <Heading as="h2" className="mb-0 text-left">Daftar Mahasiswa</Heading>
-        <Button onClick={() => alert("Buka modal tambah")}>+ Tambah Mahasiswa</Button>
-      </div>
+    <>
+      <Card>
+        <div className="flex justify-between items-center mb-4">
+          <Heading as="h2" className="mb-0 text-left">Daftar Mahasiswa</Heading>
+          <Button onClick={() => openAddModal()}>+ Tambah Mahasiswa</Button>
+        </div>
 
-      <table className="w-full text-sm text-gray-700">
-        <thead className="bg-blue-600 text-white">
-          <tr>
-            <th className="py-2 px-4 text-left">NIM</th>
-            <th className="py-2 px-4 text-left">Nama</th>
-            <th className="py-2 px-4 text-center">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mahasiswaList.map((mhs, index) => (
-            <tr
-              key={mhs.nim}
-              className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
-            >
-              <td className="py-2 px-4">{mhs.nim}</td>
-              <td className="py-2 px-4">{mhs.nama}</td>
-              <td className="py-2 px-4 text-center space-x-2">
-                <a
-                  href={`/admin/mahasiswa/${mhs.nim}`}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
-                >
-                  Detail
-                </a>
-                <Button
-                  size="sm"
-                  variant="warning"
-                  onClick={() => handleEdit(mhs.nama)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => handleDelete(mhs.nama)}
-                >
-                  Hapus
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Card>
+        <MahasiswaTable
+          data={mahasiswa}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDetail={handleDetail}
+        />
+      </Card>
+
+      <MahasiswaModal
+        isOpen={isModalOpen}
+        isEdit={isEdit}
+        form={form}
+        onChange={handleChange}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+      />
+    </>
   );
 };
 

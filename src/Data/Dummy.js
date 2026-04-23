@@ -10,13 +10,16 @@ export const mahasiswaList = [
   {
     nim: "A11.2023.15324",
     nama: "Aubin Daffa Al Ghozy",
+    status: true,
   },
   {
     nim: "20211002",
     nama: "Siti Aminah",
+    status: true,
   },
   {
     nim: "20211003",
     nama: "Ahmad Fauzi",
+    status: false,
   },
 ];

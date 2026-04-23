@@ -1,13 +1,15 @@
+import { useParams } from "react-router-dom";
+
 import Card from "@/Pages/Admin/Components/Card";
 import Heading from "@/Pages/Admin/Components/Heading";
 
 import { mahasiswaList } from "@/Data/Dummy";
 
 const MahasiswaDetail = () => {
+  // Ambil parameter nim dari URL menggunakan useParams
+  const { nim } = useParams();
 
-  const path = window.location.pathname;
-  const nim = path.split("/").pop();
-
+  // Cari data mahasiswa berdasarkan nim dari parameter URL
   const mahasiswa = mahasiswaList.find((m) => m.nim === nim);
 
   if (!mahasiswa) {
